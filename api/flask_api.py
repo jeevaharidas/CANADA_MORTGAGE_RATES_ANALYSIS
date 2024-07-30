@@ -9,14 +9,14 @@ mongo_uri = "mongodb+srv://ernestyawgaisie:ernestyawgaisie@cluster0.dvjsafm.mong
 database_name = "MortgageData"
 collection_name = "Mortgages"
 
-# Connect to MongoDB
+# Connecting to MongoDB
 client = MongoClient(mongo_uri)
 db = client[database_name]
 collection = db[collection_name]
 
 @app.route('/data', methods=['GET'])
 def get_data():
-    # Get filter parameters from the query string
+    # Getting filter parameters from the query string
     filters = {}
     if 'type_of_unit' in request.args:
         filters['Type of unit'] = request.args['type_of_unit']
@@ -31,12 +31,12 @@ def get_data():
     if 'ref_date_min' in request.args and 'ref_date_max' in request.args:
         filters['REF_DATE'] = {'$gte': int(request.args['ref_date_min']), '$lte': int(request.args['ref_date_max'])}
     
-    # Get pagination parameters
+    # Getting pagination parameters
     page = int(request.args.get('page', 1))
     limit = int(request.args.get('limit', 100))
     skip = (page - 1) * limit
 
-    # Fetch data from MongoDB based on filters with pagination
+    # Fetching the data from MongoDB based on filters with pagination
     data = list(collection.find(filters).skip(skip).limit(limit))
     for item in data:
         item['_id'] = str(item['_id'])
