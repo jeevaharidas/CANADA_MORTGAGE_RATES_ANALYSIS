@@ -124,5 +124,34 @@ def get_mortgage_range():
     return jsonify({"error": "Location not found or no data available"}), 404
 
 
+@app.route('/data/prices_over_time/<location>', methods=['GET'])
+def get_prices_over_time(location):
+    # Default to 1987 if not provided
+    year_min = int(request.args.get('year_min', 1987))
+    # Default to 2024 if not provided
+    year_max = int(request.args.get('year_max', 2024))
+
+    # MongoDB aggregation pipeline
+    price_trend = collection.aggregate([
+        {"$match": {
+            "GEO": {"$regex": location, "$options": "i"},
+            "REF_DATE": {"$gte": year_min, "$lte": year_max}
+        }},
+        {"$group": {
+            "_id": "$REF_DATE",
+            "average_price": {"$avg": "$VALUE"}
+        }},
+        {"$sort": {"_id": 1}}
+    ])
+
+    trend_data = [{"year": result["_id"], "average_price": result["average_price"]}
+                  for result in price_trend]
+
+    if trend_data:
+        return jsonify({"location": location, "price_trend": trend_data})
+    else:
+        return jsonify({"error": "No data found for the specified location and year range"}), 404
+
+
 if __name__ == '__main__':
     app.run(debug=True, port=6002)

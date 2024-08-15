@@ -15,9 +15,10 @@ class ActivityDetailsCard extends StatefulWidget {
 }
 
 class _ActivityDetailsCardState extends State<ActivityDetailsCard> {
+  MortgageController mortgageController = Get.find();
+  
   @override
   Widget build(BuildContext context) {
-    var mortgageController = Get.put(MortgageController());
     final healthDetails = HealthDetails();
 
     return Obx(() {

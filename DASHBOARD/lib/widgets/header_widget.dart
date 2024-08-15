@@ -1,9 +1,19 @@
 import 'package:fitness_dashboard_ui/const/constant.dart';
 import 'package:fitness_dashboard_ui/util/responsive.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class HeaderWidget extends StatelessWidget {
+import '../controllers/mortgage_controller.dart';
+
+class HeaderWidget extends StatefulWidget {
   const HeaderWidget({super.key});
+
+  @override
+  State<HeaderWidget> createState() => _HeaderWidgetState();
+}
+
+class _HeaderWidgetState extends State<HeaderWidget> {
+  var mortgageController = Get.put(MortgageController());
 
   @override
   Widget build(BuildContext context) {
@@ -27,32 +37,40 @@ class HeaderWidget extends StatelessWidget {
           ),
         if (!Responsive.isMobile(context))
           Expanded(
-            child: TextField(
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: cardBackgroundColor,
-                enabledBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.transparent),
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.0),
-                  borderSide: BorderSide(color: Theme.of(context).primaryColor),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 5,
-                ),
-                hintText: 'Search',
-                prefixIcon: const Icon(
+              child: TextField(
+            controller: mortgageController.searchController,
+            onChanged: (value) {
+              mortgageController.location.value = value;
+            },
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: cardBackgroundColor,
+              enabledBorder: const OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.transparent),
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: BorderSide(color: Theme.of(context).primaryColor),
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                vertical: 5,
+              ),
+              hintText: 'Search',
+              prefixIcon: GestureDetector(
+                onTap: () {
+                  mortgageController.performSearch();
+                },
+                child: const Icon(
                   Icons.search,
                   color: Colors.grey,
                   size: 21,
                 ),
               ),
             ),
-          ),
+          )),
         if (Responsive.isMobile(context))
           Row(
             children: [
