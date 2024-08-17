@@ -11,6 +11,7 @@ class MortgageController extends GetxController {
   var priceTrend = [].obs;
   var priceTrend2 = <Map<String, dynamic>>[].obs;
   var spots = <FlSpot>[].obs;
+  var isLoading = false.obs;
   TextEditingController searchController = TextEditingController();
   @override
   void onInit() {
@@ -81,26 +82,36 @@ class MortgageController extends GetxController {
   }
 
   Future<void> fetchPriceTrend(String location, int year) async {
+    isLoading(true);
     try {
       final data = await ApiService.getPriceTrend(location, year);
       priceTrend.value = data;
       print(data);
+      isLoading(false);
     } catch (e) {
+      isLoading(false);
       Get.snackbar('Error', e.toString());
     }
   }
 
   Future<void> fetchAveragePrice(String location) async {
+    isLoading(true);
+
     try {
       final data = await ApiService.getAveragePrice(location);
       averagePrice.value = data['average_price'];
       print(averagePrice.value);
+      isLoading(false);
     } catch (e) {
+      isLoading(false);
+
       Get.snackbar('Error', e.toString());
     }
   }
 
   Future<void> fetchPriceTrendOverTime(String location) async {
+    isLoading(true);
+
     try {
       final data = await ApiService.getPricesOverTime(location);
       var priceTrend = List<Map<String, dynamic>>.from(data['price_trend']);
@@ -111,9 +122,11 @@ class MortgageController extends GetxController {
         double price = data['average_price'].toDouble();
         return FlSpot(year, price);
       }).toList();
+      isLoading(false);
 
       print(spots); // Optional: print the spots for debugging
     } catch (e) {
+      isLoading(false);
       Get.snackbar('Error', e.toString());
     }
   }
